@@ -3,9 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.27703.2042
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Serverless.Core", "Serverless.Core\Serverless.Core.csproj", "{67599862-EF7F-490D-9EAB-39D5EA2741BB}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Serverless.Core", "Serverless.Core\Serverless.Core.csproj", "{67599862-EF7F-490D-9EAB-39D5EA2741BB}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Serverless.Catalog.Api", "Serverless.Catalog.Api\Serverless.Catalog.Api.csproj", "{3AC49305-938A-442B-935F-CCDF94298639}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Serverless.Client.Mvc", "Serverless.Client.Mvc\Serverless.Client.Mvc.csproj", "{CDD3D189-C74E-487E-86F3-E4E78DC6912B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +23,10 @@ Global
 		{3AC49305-938A-442B-935F-CCDF94298639}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3AC49305-938A-442B-935F-CCDF94298639}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3AC49305-938A-442B-935F-CCDF94298639}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CDD3D189-C74E-487E-86F3-E4E78DC6912B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CDD3D189-C74E-487E-86F3-E4E78DC6912B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CDD3D189-C74E-487E-86F3-E4E78DC6912B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CDD3D189-C74E-487E-86F3-E4E78DC6912B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
