@@ -3,6 +3,7 @@ using Serverless.Application.UseCaseCommands.NewsStates;
 using Serverless.Application.UseCaseQueries.NewsStates;
 using Serverless.Application.UseCaseSharedModels;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Serverless.Api.Controllers
 {
@@ -28,14 +29,16 @@ namespace Serverless.Api.Controllers
 
 		// GET api/news-states
 		[HttpGet]
-		public IEnumerable<NewsStatesModel> FindNewsList()
+		[Produces("application/xml")]
+		public NewsStatesContainerModel FindNewsList()
 		{
-			var list = _getNewsStatesQuery.FindAll();
-			return list;
+			IEnumerable<NewsStatesModel> newsStateModels = _getNewsStatesQuery.FindAll();
+			return new NewsStatesContainerModel { NewsStatesModels = newsStateModels.ToList() };
 		}
 
 		// GET api/news-states/5
 		[HttpGet("{id}")]
+		[Produces("application/xml")]
 		public NewsStatesModel FindNewsById(int id)
 		{
 			var news = _getNewsStatesQuery.FindById(id);

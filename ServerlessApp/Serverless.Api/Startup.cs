@@ -4,11 +4,11 @@ using Autofac.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Serverless.Application;
-using Serverless.Common;
 using Serverless.Persistence.Dynamo;
 
 namespace Serverless.Api
@@ -30,7 +30,11 @@ namespace Serverless.Api
 		// called by the runtime before the Configure method, below.
 		public IServiceProvider ConfigureServices(IServiceCollection services)
         {
-            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
+            services.AddMvc(options => {
+				options.OutputFormatters.Add(new XmlSerializerOutputFormatter());
+			})
+			.AddXmlSerializerFormatters()
+			.SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
 
             // Add S3 to the ASP.NET Core dependency injection framework.
             services.AddAWSService<Amazon.S3.IAmazonS3>();

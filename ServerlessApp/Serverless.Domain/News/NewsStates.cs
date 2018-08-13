@@ -7,9 +7,7 @@ namespace Serverless.Domain.News
 	{
 		[AutoIncrement]
 		public int Id { get; set; }
-        public string Status { get; set; }
-
-		[References(typeof(NewsContent))]
+        public string Status { get; set; }		
         public int NewsContentId { get; set; }
 
 		protected override string GetId()
