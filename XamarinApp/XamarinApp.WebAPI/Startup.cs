@@ -3,11 +3,12 @@ using Autofac;
 using Autofac.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using XamarinApp.Application;
 using XamarinApp.Persistence.Catalog;
+using XamarinApp.WebAPI.Extensions;
 
 namespace XamarinApp.WebAPI
 {
@@ -24,7 +25,11 @@ namespace XamarinApp.WebAPI
         // This method gets called by the runtime. Use this method to add services to the container.
         public IServiceProvider ConfigureServices(IServiceCollection services)
         {
-            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
+            services
+                .AddCustomMVC(Configuration)
+                .AddCustomDbContext(Configuration)
+                .AddCustomOptions(Configuration)
+                .AddSwagger();
 
             var builder = new ContainerBuilder();
 
@@ -50,7 +55,7 @@ namespace XamarinApp.WebAPI
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
         {
             if (env.IsDevelopment())
             {
@@ -61,8 +66,23 @@ namespace XamarinApp.WebAPI
                 app.UseHsts();
             }
 
+            var pathBase = Configuration["PATH_BASE"];
+            if (!string.IsNullOrEmpty(pathBase))
+            {
+                loggerFactory.CreateLogger("init").LogDebug($"Using PATH BASE '{pathBase}'");
+                app.UsePathBase(pathBase);
+            }
+
+            app.UseCors("CorsPolicy");
+
             app.UseHttpsRedirection();
             app.UseMvc();
+
+            app
+                .UseSwagger()
+                .UseSwaggerUI(c => {
+                    c.SwaggerEndpoint($"{ (!string.IsNullOrEmpty(pathBase) ? pathBase : string.Empty) }/swagger/v1/swagger.json", "Catalog.API V1");
+                });
         }
     }
 }

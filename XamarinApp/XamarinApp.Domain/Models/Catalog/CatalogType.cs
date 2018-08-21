@@ -1,9 +1,11 @@
-﻿namespace XamarinApp.Domain.Models.Catalog
+﻿using System.Collections.Generic;
+
+namespace XamarinApp.Domain.Models.Catalog
 {
     public class CatalogType
     {
         public int Id { get; set; }
 
-        public string Type { get; set; }
+        public string Type { get; set; }        
     }
 }

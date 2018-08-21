@@ -18,6 +18,7 @@ namespace XamarinApp.Application.UseCases.Catalog
         public CatalogService(ICatalogRepository catalogRepository,
             IOptionsSnapshot<CatalogSettings> settings)
         {
+
             _catalogRepository = catalogRepository;
             _settings = settings.Value;
         }
@@ -36,16 +37,20 @@ namespace XamarinApp.Application.UseCases.Catalog
 
         public async Task<IEnumerable<CatalogItemDto>> GetByIdsAsync(string ids, int? pageSize, int? pageIndex)
         {
-            var numIds = ids.Split(',').Select(id => (Ok: int.TryParse(id, out int x), Value: x));
-
-            if (!numIds.All(nid => nid.Ok))
+            dynamic items;
+            if (string.IsNullOrEmpty(ids))
             {
-                throw new Exception("ids value invalid. Must be comma-separated list of numbers");
+                items = await _catalogRepository.GetItemsByPaginationAsync(pageSize ?? CatalogConstant.PageSize, pageIndex ?? CatalogConstant.PageIndex);
             }
-
-            var idsToSelect = numIds.Select(id => id.Value);
-            var items = await _catalogRepository.GetByIdsAsync(idsToSelect, pageSize ?? CatalogConstant.PageSize, pageIndex ?? CatalogConstant.PageIndex);
-
+            else
+            {
+                var numIds = ids.Split(',').Select(id => (Ok: int.TryParse(id, out int x), Value: x));
+                if (!numIds.All(nid => nid.Ok)) {
+                    throw new Exception("ids value invalid. Must be comma-separated list of numbers");
+                }
+                var idsToSelect = numIds.Select(id => id.Value);
+                items = await _catalogRepository.GetByIdsAsync(idsToSelect, pageSize ?? CatalogConstant.PageSize, pageIndex ?? CatalogConstant.PageIndex);
+            }
             return ChangeUriPlaceholder(items);
         }
 
@@ -155,7 +160,7 @@ namespace XamarinApp.Application.UseCases.Catalog
         }
 
 
-        private List<CatalogItemDto> ChangeUriPlaceholder(IEnumerable<CatalogItem> items)
+        private IEnumerable<CatalogItemDto> ChangeUriPlaceholder(IEnumerable<CatalogItem> items)
         {
             var baseUri = _settings.PicBaseUrl;
             var azureStorageEnabled = _settings.AzureStorageEnabled;
@@ -167,7 +172,7 @@ namespace XamarinApp.Application.UseCases.Catalog
                 return itemDto;
             });
 
-            return result.ToList();
+            return result;
         }
     }
 }

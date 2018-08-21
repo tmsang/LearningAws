@@ -8,6 +8,7 @@ namespace XamarinApp.Persistence.Catalog
     {
         protected override void Load(ContainerBuilder builder)
         {
+            builder.RegisterType<CatalogContext>().InstancePerLifetimeScope();
             builder.RegisterType<CatalogRepository>().As<ICatalogRepository>().InstancePerLifetimeScope();
         }
     }

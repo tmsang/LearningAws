@@ -9,6 +9,7 @@ namespace XamarinApp.Persistence.Catalog
     {
         public CatalogContext(DbContextOptions<CatalogContext> options) : base(options)
         {
+
         }
         public DbSet<CatalogItem> CatalogItems { get; set; }
         public DbSet<CatalogBrand> CatalogBrands { get; set; }
@@ -27,8 +28,13 @@ namespace XamarinApp.Persistence.Catalog
     {
         public CatalogContext CreateDbContext(string[] args)
         {
+            //var optionsBuilder = new DbContextOptionsBuilder<CatalogContext>()
+            //    .UseSqlServer("Server=.;Initial Catalog=Microsoft.eShopOnContainers.Services.CatalogDb;Integrated Security=true");
+
             var optionsBuilder = new DbContextOptionsBuilder<CatalogContext>()
-                .UseSqlServer("Server=.;Initial Catalog=Microsoft.eShopOnContainers.Services.CatalogDb;Integrated Security=true");
+                //.UseSqlite(@"Data Source = D:\Projects\Learning\XamarinApp\XamarinApp.Persistence.Catalog\Database\eShop.db");
+                .UseSqlServer("Server=localhost\\SQLEXPRESS01;Initial Catalog=Microsoft.eShopOnContainers.Services.CatalogDb;Integrated Security=true");
+
 
             return new CatalogContext(optionsBuilder.Options);
         }

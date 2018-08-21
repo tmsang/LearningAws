@@ -14,7 +14,8 @@ namespace XamarinApp.Persistence.Catalog.Repositories
 
         public CatalogRepository(CatalogContext catalogContext)
         {
-            _catalogContext = catalogContext;
+            _catalogContext = catalogContext ?? throw new ArgumentNullException(nameof(catalogContext));
+            ((DbContext)catalogContext).ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.NoTracking;
         }
 
         public async Task<CatalogItem> GetByIdAsync(int id) {
@@ -25,6 +26,8 @@ namespace XamarinApp.Persistence.Catalog.Repositories
         public async Task<IEnumerable<CatalogItem>> GetByIdsAsync(IEnumerable<int> ids, int pageSize, int pageIndex)
         {
             var items = await _catalogContext.CatalogItems
+                .Include(p => p.CatalogType)
+                .Include(p => p.CatalogBrand)
                 .Where(ci => ids.Contains(ci.Id))
                 .Skip(pageSize * pageIndex)
                 .Take(pageSize)
@@ -36,6 +39,8 @@ namespace XamarinApp.Persistence.Catalog.Repositories
         public async Task<IEnumerable<CatalogItem>> GetItemsByCatalogNameAsync(string catalogName, int pageSize, int pageIndex)
         {
             var items = await _catalogContext.CatalogItems
+                .Include(p => p.CatalogType)
+                .Include(p => p.CatalogBrand)
                 .Where(c => c.Name.StartsWith(catalogName))
                 .Skip(pageSize * pageIndex)
                 .Take(pageSize)
@@ -47,6 +52,8 @@ namespace XamarinApp.Persistence.Catalog.Repositories
         public async Task<IEnumerable<CatalogItem>> GetItemsByCatalogTypeIdAsync(int catalogTypeId, int pageSize, int pageIndex)
         {
             var items = await _catalogContext.CatalogItems
+                .Include(p => p.CatalogType)
+                .Include(p => p.CatalogBrand)
                 .Where(p => p.CatalogTypeId == catalogTypeId)
                 .Skip(pageSize * pageIndex)
                 .Take(pageSize)
@@ -58,6 +65,8 @@ namespace XamarinApp.Persistence.Catalog.Repositories
         public async Task<IEnumerable<CatalogItem>> GetItemsByCatalogTypeIdAsync(int catalogTypeId, int catalogBrandId, int pageSize, int pageIndex)
         {
             var items = await _catalogContext.CatalogItems
+                .Include(p => p.CatalogType)
+                .Include(p => p.CatalogBrand)
                 .Where(p => p.CatalogTypeId == catalogTypeId && p.CatalogBrandId == catalogBrandId)
                 .Skip(pageSize * pageIndex)
                 .Take(pageSize)
@@ -69,6 +78,8 @@ namespace XamarinApp.Persistence.Catalog.Repositories
         public async Task<IEnumerable<CatalogItem>> GetItemsByCatalogBrandIdAsync(int catalogBrandId, int pageSize, int pageIndex)
         {
             var items = await _catalogContext.CatalogItems
+                .Include(p => p.CatalogType)
+                .Include(p => p.CatalogBrand)
                 .Where(p => p.CatalogBrandId == catalogBrandId)
                 .Skip(pageSize * pageIndex)
                 .Take(pageSize)
@@ -80,6 +91,8 @@ namespace XamarinApp.Persistence.Catalog.Repositories
         public async Task<IEnumerable<CatalogItem>> GetItemsByPaginationAsync(int pageSize, int pageIndex)
         {
             var items = await _catalogContext.CatalogItems
+                .Include(p => p.CatalogType)
+                .Include(p => p.CatalogBrand)
                 .Skip(pageSize * pageIndex)
                 .Take(pageSize)
                 .ToListAsync();
