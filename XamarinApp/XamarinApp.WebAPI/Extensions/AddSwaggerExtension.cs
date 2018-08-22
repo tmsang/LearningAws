@@ -2,9 +2,9 @@
 
 namespace XamarinApp.WebAPI.Extensions
 {
-    public static class AddSwaggerExtension
+    public static class AddcustomSwaggerExtension
     {
-        public static IServiceCollection AddSwagger(this IServiceCollection services)
+        public static IServiceCollection AddCustomSwagger(this IServiceCollection services)
         {
             services.AddSwaggerGen(options =>
             {

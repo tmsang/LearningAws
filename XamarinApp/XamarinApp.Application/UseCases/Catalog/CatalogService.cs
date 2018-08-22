@@ -1,6 +1,9 @@
-﻿using Microsoft.Extensions.Options;
+﻿using Autofac;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using XamarinApp.Application.Extensions;
@@ -159,6 +162,58 @@ namespace XamarinApp.Application.UseCases.Catalog
             await _catalogRepository.DeleteAsync(id);
         }
 
+        public async Task<(byte[], string)> GetImageFile(int catalogItemId) {
+            var _env = SharedItems.ApplicationContainer.Resolve<IHostingEnvironment>();
+            var item = await GetByIdAsync(catalogItemId);
+            if (item == null) return (null, null);
+
+            var webRoot = _env.WebRootPath;
+            var path = Path.Combine(webRoot, item.PictureFileName);
+            var imageFileExtension = Path.GetExtension(item.PictureFileName);
+            var mimetype = GetImageMimeTypeFromImageFileExtension(imageFileExtension);
+            var buffer = File.ReadAllBytes(path);
+
+            return (buffer, mimetype);
+
+            string GetImageMimeTypeFromImageFileExtension(string extension)
+            {
+                string mimeType;
+
+                switch (extension)
+                {
+                    case ".png":
+                        mimeType = "image/png";
+                        break;
+                    case ".gif":
+                        mimeType = "image/gif";
+                        break;
+                    case ".jpg":
+                    case ".jpeg":
+                        mimeType = "image/jpeg";
+                        break;
+                    case ".bmp":
+                        mimeType = "image/bmp";
+                        break;
+                    case ".tiff":
+                        mimeType = "image/tiff";
+                        break;
+                    case ".wmf":
+                        mimeType = "image/wmf";
+                        break;
+                    case ".jp2":
+                        mimeType = "image/jp2";
+                        break;
+                    case ".svg":
+                        mimeType = "image/svg+xml";
+                        break;
+                    default:
+                        mimeType = "application/octet-stream";
+                        break;
+                }
+
+                return mimeType;
+            }
+        }
 
         private IEnumerable<CatalogItemDto> ChangeUriPlaceholder(IEnumerable<CatalogItem> items)
         {

@@ -17,5 +17,7 @@ namespace XamarinApp.Application.UseCases.Catalog
         Task<int> CreateAsync(CatalogItemDto catalogItemDto);
         Task UpdateAsync(int id, CatalogItemDto catalogItemDto);
         Task DeleteAsync(int id);
+
+        Task<(byte[], string)> GetImageFile(int catalogItemId);
     }
 }

@@ -25,8 +25,8 @@ namespace XamarinApp.WebAPI
                     var logger = services.GetService<ILogger<CatalogContextSeed>>();
 
                     new CatalogContextSeed()
-                    .SeedAsync(context, env, settings, logger)
-                    .Wait();
+                        .SeedAsync(context, env, settings, logger)
+                        .Wait();
                 })
                 .Run();
         }

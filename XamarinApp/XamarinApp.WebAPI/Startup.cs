@@ -6,7 +6,10 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+
 using XamarinApp.Application;
+using XamarinApp.Domain.Configurations;
+using XamarinApp.Persistence.Basket;
 using XamarinApp.Persistence.Catalog;
 using XamarinApp.WebAPI.Extensions;
 
@@ -19,7 +22,6 @@ namespace XamarinApp.WebAPI
             Configuration = configuration;
         }
 
-        public IContainer ApplicationContainer { get; private set; }
         public IConfiguration Configuration { get; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
@@ -29,8 +31,23 @@ namespace XamarinApp.WebAPI
                 .AddCustomMVC(Configuration)
                 .AddCustomDbContext(Configuration)
                 .AddCustomOptions(Configuration)
-                .AddSwagger();
+                .AddCustomSwagger();
 
+            services.AddCustomAuthentication(Configuration);
+            services.AddCustomRedis(Configuration);
+            services.AddCors(options =>
+            {
+                options.AddPolicy("CorsPolicy",
+                    policyBuilder => policyBuilder.AllowAnyOrigin()
+                    .AllowAnyMethod()
+                    .AllowAnyHeader()
+                    .AllowCredentials());
+            });
+            services.AddOptions();
+
+            //==============================================================
+            // Register IOC
+            //==============================================================
             var builder = new ContainerBuilder();
 
             // Register dependencies, populate the services from
@@ -46,12 +63,13 @@ namespace XamarinApp.WebAPI
             // in the ServiceCollection. Mix and match as needed.
 
             builder.RegisterModule<XamarinPersistenceCatalogModule>();
+            builder.RegisterModule<XamarinPersistenceBasketModule>();
             builder.RegisterModule<XamarinAppicationModule>();
 
             builder.Populate(services);
-            ApplicationContainer = builder.Build();
+            SharedItems.ApplicationContainer = builder.Build();
 
-            return new AutofacServiceProvider(ApplicationContainer);
+            return new AutofacServiceProvider(SharedItems.ApplicationContainer);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -66,23 +84,14 @@ namespace XamarinApp.WebAPI
                 app.UseHsts();
             }
 
-            var pathBase = Configuration["PATH_BASE"];
-            if (!string.IsNullOrEmpty(pathBase))
-            {
-                loggerFactory.CreateLogger("init").LogDebug($"Using PATH BASE '{pathBase}'");
-                app.UsePathBase(pathBase);
-            }
-
             app.UseCors("CorsPolicy");
+            app.UseCustomAuthentication(this.Configuration);
 
             app.UseHttpsRedirection();
             app.UseMvc();
+            app.UseCustomSwagger(Configuration, loggerFactory);
 
-            app
-                .UseSwagger()
-                .UseSwaggerUI(c => {
-                    c.SwaggerEndpoint($"{ (!string.IsNullOrEmpty(pathBase) ? pathBase : string.Empty) }/swagger/v1/swagger.json", "Catalog.API V1");
-                });
+            app.SeedLocationAsync(loggerFactory);
         }
     }
 }

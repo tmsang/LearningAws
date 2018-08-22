@@ -19,7 +19,10 @@ namespace XamarinApp.Persistence.Catalog.Repositories
         }
 
         public async Task<CatalogItem> GetByIdAsync(int id) {
-            var item = await _catalogContext.CatalogItems.SingleOrDefaultAsync(p => p.Id == id);
+            var item = await _catalogContext.CatalogItems
+                                .Include(p => p.CatalogType)
+                                .Include(p => p.CatalogBrand)
+                                .SingleOrDefaultAsync(p => p.Id == id);
             return item;
         }
 
