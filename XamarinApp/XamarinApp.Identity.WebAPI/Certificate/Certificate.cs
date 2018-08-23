@@ -4,7 +4,7 @@ using System.Security.Cryptography.X509Certificates;
 
 namespace XamarinApp.Identity.WebAPI.Certificate
 {
-    public static class Certificate
+    static class Certificate
     {
         public static X509Certificate2 Get()
         {

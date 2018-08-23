@@ -248,7 +248,6 @@ namespace XamarinApp.Identity.WebAPI.Configuration
                         "webshoppingagg"
                     }
                 }
-
             };
         }
     }
